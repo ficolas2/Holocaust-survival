@@ -50,7 +50,7 @@ public class NuclearHolocaust implements ApplicationListener {
 		building1 = Bodies.createBuilding(-150, 0, world, 100, 100);
 		building2 = Bodies.createBuilding(-150, 105, world, 5, 5);
 		bullet = Bodies.createBullet(-150, -200, world);
-		bullet.applyLinearImpulse(0, 100, bullet.getWorldCenter().x, bullet.getWorldCenter().y, true);
+		bullet.applyLinearImpulse(0f, 1000000000000f, bullet.getWorldCenter().x, bullet.getWorldCenter().y, true);
 		
 	}
 
@@ -71,7 +71,7 @@ public class NuclearHolocaust implements ApplicationListener {
 		
 		
 		// Only if the game has been loaded
-		world.step(1/60, 6, 2);
+		world.step(1f/60f, 6, 2);
 		
 	}
 	

@@ -41,7 +41,7 @@ public class Bodies {
 		
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = circle;
-		fixtureDef.density = 0.5f; 
+		fixtureDef.density = 0.1f; 
 		fixtureDef.friction = 0.4f;
 		fixtureDef.restitution = 0f;
 		
