@@ -3,7 +3,12 @@ package com.NuclearHolocaust.NuclearHolocaust;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import logic.BodyRemoval;
+import logic.ContactLis;
 import rendering.Images;
+import bodies.Bodies;
+import bodies.Bullet;
+import bodies.Player;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -23,19 +28,20 @@ public class NuclearHolocaust implements ApplicationListener {
 	Texture img;
 	long time=0;
 	int x=1;
-	public World world;
+	public static World world;
 	private Box2DDebugRenderer debugRenderer;
 	private Camera camera;
 	
 	Body building1;
 	Body building2;
 	Body bullet;
+	Body character;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		camera=new OrthographicCamera(screenSize.width, screenSize.height);
+		camera=new OrthographicCamera(screenSize.width/32, screenSize.height/32);
 		
 		Images.loadImage("badlogic.jpg");
 		
@@ -45,12 +51,15 @@ public class NuclearHolocaust implements ApplicationListener {
 		
 		// VVV After the game is loaded/created VVV
 		world = new World(new Vector2(0,0), true);
+		world.setContactListener(new ContactLis());
 		debugRenderer = new Box2DDebugRenderer();
 		
-		building1 = Bodies.createBuilding(-150, 0, world, 100, 100);
-		building2 = Bodies.createBuilding(-150, 105, world, 5, 5);
-		bullet = Bodies.createBullet(-150, -200, world);
-		bullet.applyLinearImpulse(0f, 1000000000000f, bullet.getWorldCenter().x, bullet.getWorldCenter().y, true);
+		building1 = Bodies.createBuilding(0, 0, world, 5, 5);
+		building2 = Bodies.createBuilding(0, 6f, world, 1, 1);
+		bullet = Bullet.create(0, -10, world, (float) Math.PI/2);
+		character = Player.create(-10, 0, world);
+		// Body.setUserData() to assign an object to that body, good for rendering. Then loop through
+		//the bodies by using world.getBodies(Array). Linear damping to slow down. (rozamiento)
 		
 	}
 
@@ -69,9 +78,12 @@ public class NuclearHolocaust implements ApplicationListener {
 		batch.end();
 		*/
 		
+		Logic.playerMovement(character);
+		
 		
 		// Only if the game has been loaded
-		world.step(1f/60f, 6, 2);
+		world.step(1/60f, 6, 2);
+		BodyRemoval.remove();
 		
 	}
 	
