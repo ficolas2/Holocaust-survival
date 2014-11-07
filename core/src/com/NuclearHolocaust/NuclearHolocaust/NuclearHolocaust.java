@@ -8,7 +8,7 @@ import logic.ContactLis;
 import rendering.Images;
 import bodies.Bodies;
 import bodies.Bullet;
-import bodies.Player;
+import bodies.player.Player;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -31,11 +31,19 @@ public class NuclearHolocaust implements ApplicationListener {
 	public static World world;
 	private Box2DDebugRenderer debugRenderer;
 	private Camera camera;
+	//private GUI GUI;
 	
 	Body building1;
 	Body building2;
 	Body bullet;
 	Body character;
+	
+	public boolean isPaused(){
+		/*if (GUI==null){
+			return true;
+		}*/
+		return false;
+	}
 	
 	@Override
 	public void create () {
@@ -57,7 +65,7 @@ public class NuclearHolocaust implements ApplicationListener {
 		building1 = Bodies.createBuilding(0, 0, world, 5, 5);
 		building2 = Bodies.createBuilding(0, 6f, world, 1, 1);
 		bullet = Bullet.create(0, -10, world, (float) Math.PI/2);
-		character = Player.create(-10, 0, world);
+		character = Player.create(0, 0, world);
 		// Body.setUserData() to assign an object to that body, good for rendering. Then loop through
 		//the bodies by using world.getBodies(Array). Linear damping to slow down. (rozamiento)
 		
@@ -65,24 +73,29 @@ public class NuclearHolocaust implements ApplicationListener {
 
 	@Override
 	public void render () {
-		debugRenderer.render(world, camera.combined);
-		Gdx.gl.glClearColor(0, 0, 1, 1);
+		camera.position.set(character.getPosition().x, character.getPosition().y, 0);
+		camera.update();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		debugRenderer.render(world, camera.combined);
 		
-		/*
+		
+		
 		batch.setProjectionMatrix(camera.combined);
+		
 		batch.begin();
+		
 		Images.draw(batch,0,0,0);
 		batch.end();
-		*/
+		
+		debugRenderer.render(world, camera.combined);
 		
 		Logic.playerMovement(character);
 		
+		//if (!paused){
+			world.step(1/60f, 6, 2);
+		//}
 		
-		// Only if the game has been loaded
-		world.step(1/60f, 6, 2);
 		BodyRemoval.remove();
 		
 	}

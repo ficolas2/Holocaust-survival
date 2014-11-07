@@ -11,9 +11,9 @@ public class BodyRemoval {
 		removeList.add(body);
 	}
 	public static void remove(){
-		
 		for (int i = 0;i < removeList.size();i++){
 			NuclearHolocaust.world.destroyBody(removeList.get(i));
 		}
+		removeList.clear();
 	}
 }

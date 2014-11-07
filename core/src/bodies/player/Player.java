@@ -1,4 +1,4 @@
-package bodies;
+package bodies.player;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -9,7 +9,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Player {
-	String name="Player";
+	public String name="Player";
+	private int health=100;
+	private boolean alive=true;
+	private PlayerSpeedEnum speed=PlayerSpeedEnum.IDLE;
+	private PlayerInv inventory = new PlayerInv();
 
 	public static Body create(float x, float y, World world){
 		BodyDef bodyDef = new BodyDef();
@@ -35,5 +39,34 @@ public class Player {
 		body.setUserData(new Player());
 		return body;
 		
+	}
+	public int damage(int amount){
+		if (alive==true){
+			health+=amount;
+			if (health<=0){
+				health=0;
+				alive=false;
+			}else if (health>100){
+				health=100;
+			}
+			
+			return health;	
+		}
+		return health;
+	}
+	public int getHealth(){
+		return health;
+	}
+	public boolean isAlive(){
+		return alive;
+	}
+	public void setSpeed(PlayerSpeedEnum sp){
+		speed=sp;
+	}
+	public PlayerSpeedEnum getSpeed(){
+		return speed;
+	}
+	public PlayerInv getInventory(){
+		return inventory;
 	}
 }
