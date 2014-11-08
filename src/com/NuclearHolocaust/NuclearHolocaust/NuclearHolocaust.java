@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 
 import logic.BodyRemoval;
 import logic.ContactLis;
+import logic.KeyHandler;
 import rendering.Images;
 import bodies.Bodies;
 import bodies.Bullet;
@@ -25,13 +26,13 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class NuclearHolocaust implements ApplicationListener {
 	SpriteBatch batch;
-	Texture img;
 	long time=0;
 	int x=1;
 	public static World world;
 	private Box2DDebugRenderer debugRenderer;
-	private Camera camera;
-	//private GUI GUI;
+	private Camera gameCamera;
+	private Camera GUICamera;
+	public static GUIs.GUI GUI;
 	
 	Body building1;
 	Body building2;
@@ -49,7 +50,8 @@ public class NuclearHolocaust implements ApplicationListener {
 	public void create () {
 		batch = new SpriteBatch();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		camera=new OrthographicCamera(screenSize.width/32, screenSize.height/32);
+		gameCamera=new OrthographicCamera(screenSize.width/32, screenSize.height/32);
+		GUICamera=new OrthographicCamera(screenSize.width, screenSize.height);
 		
 		Images.loadImage("badlogic.jpg");
 		
@@ -69,32 +71,42 @@ public class NuclearHolocaust implements ApplicationListener {
 		// Body.setUserData() to assign an object to that body, good for rendering. Then loop through
 		//the bodies by using world.getBodies(Array). Linear damping to slow down. (rozamiento)
 		
+		
 	}
 
 	@Override
 	public void render () {
-		camera.position.set(character.getPosition().x, character.getPosition().y, 0);
-		camera.update();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		//Rendering
+		if (GUI!=null){
+			GUICamera.update();
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			batch.setProjectionMatrix(GUICamera.combined);
+			batch.begin();
+			GUI.draw(batch);
+			batch.end();
+		}else{
+			gameCamera.position.set(character.getPosition().x, character.getPosition().y, 0);
+			gameCamera.update();
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			
+			batch.setProjectionMatrix(gameCamera.combined);
+			
+			batch.begin();
+			Texture img=new Texture("badlogic.jpg");
+			batch.draw(img,0,0,img.getHeight()/32,img.getWidth()/32);
+			batch.end();
+			
+			debugRenderer.render(world, gameCamera.combined);
+		}
 		
-		
-		
-		
-		batch.setProjectionMatrix(camera.combined);
-		
-		batch.begin();
-		
-		Images.draw(batch,0,0,0);
-		batch.end();
-		
-		debugRenderer.render(world, camera.combined);
-		
-		Logic.playerMovement(character);
-		
-		//if (!paused){
+		//Game logic
+		KeyHandler.playerMovement(character);
+		KeyHandler.actionKeys();
+		if (!isPaused()){
 			world.step(1/60f, 6, 2);
-		//}
+		}
 		
 		BodyRemoval.remove();
 		
